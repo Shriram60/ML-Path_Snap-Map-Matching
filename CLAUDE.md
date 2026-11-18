@@ -101,9 +101,16 @@ Run everything from the repo root.
 
 One row per GPS point and candidate road segment:
 
-`trip_id`, `obs_idx`, `t`, `gps_lon`, `gps_lat`, `arc_id`, then feature columns starting with `f_`, then `label` (1 or 0, training and student test only).
+`trip_id`, `obs_idx`, `t`, `gps_lon`, `gps_lat`, `arc_id`, then feature columns starting with `f_`, then `ref_arc` and `label` (training and student test only).
 
-`label` must never be used as a feature or be required at inference.
+`ref_arc` and `label` must never be used as features or be required at inference. Use only columns starting with `f_` as model inputs.
+
+Build the tables with `python -m features.build_dataset`, run from the repo root. It needs `numpy`, `pandas`, `scipy` and `pyarrow`, and takes under a minute.
+
+- `$PATHSNAP_WORK/candidates/<partition>/<trip>.parquet`: labelled candidate rows, one row per GPS point and arc. Read a whole partition with `pd.read_parquet(folder)`.
+- `$PATHSNAP_WORK/references/<partition>/<trip>.parquet`: one row per GPS point with `obs_idx`, `route_pos`, `ref_arc`, `ref_dist_m`. `ref_arc` is `-1` when the point has no reliable reference. Use this table for candidate miss rate.
+
+Group cross-validation folds by `trip_id`. Arc IDs in these tables are canonical: when two arcs join the same two nodes in the same direction, the lowest ID is used. Predictions and references must be compared in canonical IDs (`trip.canonical_arc`).
 
 ### Saved artifacts
 
