@@ -25,6 +25,10 @@ FEATURE_COLUMNS = [
     "f_heading_cos",
     "f_heading_known",
     "f_heading_rank",
+    "f_heading_cos_carried",
+    "f_heading_cos_next",
+    "f_straightness",
+    "f_net_speed_mps",
     "f_context_dist_mean_m",
     "f_context_dist_max_m",
     "f_anchor_match",
@@ -49,6 +53,9 @@ class CandidateConfig:
     sample_spacing_m: float = 10.0
     heading_window: int = 2
     min_heading_move_m: float = 5.0
+    steady_window: int = 5
+    steady_min_straightness: float = 0.5
+    steady_min_move_m: float = 15.0
     context_offsets: tuple = (-8, -3, 3, 8)
     context_cap_m: float = 200.0
     anchor_sigma_m: float = 10.0
@@ -130,6 +137,44 @@ def _motion(points, window, min_move):
     return unit, known
 
 
+def motion_summary(points, times, config=CandidateConfig()):
+    """Return net movement, straightness, elapsed time and a steady-movement flag.
+
+    A stopped vehicle's points bounce around, so the path is long while the net
+    movement is small. GPS jitter at a stop therefore does not count as steady.
+    """
+    n = len(points)
+    index = np.arange(n)
+    low = np.maximum(index - config.steady_window, 0)
+    high = np.minimum(index + config.steady_window, n - 1)
+    net_vector = points[high] - points[low]
+    net = np.linalg.norm(net_vector, axis=1)
+    travelled = np.r_[0.0, np.cumsum(np.linalg.norm(np.diff(points, axis=0), axis=1))]
+    path = travelled[high] - travelled[low]
+    straightness = np.divide(net, path, out=np.zeros(n), where=path > 0)
+    elapsed = np.maximum(times[high] - times[low], 1.0)
+    steady = (straightness >= config.steady_min_straightness) & (net >= config.steady_min_move_m)
+    return net_vector, net, straightness, elapsed, steady
+
+
+def _steady_motion(points, times, config):
+    """Carry the heading across stops from the nearest steady movement."""
+    net_vector, net, straightness, elapsed, steady = motion_summary(points, times, config)
+    n = len(points)
+    index = np.arange(n)
+    unit = np.zeros((n, 2))
+    unit[steady] = net_vector[steady] / net[steady, None]
+    last = np.maximum.accumulate(np.where(steady, index, -1))
+    following = np.minimum.accumulate(np.where(steady, index, n)[::-1])[::-1]
+    carried = np.zeros((n, 2))
+    upcoming = np.zeros((n, 2))
+    carried[last >= 0] = unit[last[last >= 0]]
+    upcoming[following < n] = unit[following[following < n]]
+    no_earlier = last < 0
+    carried[no_earlier] = upcoming[no_earlier]
+    return carried, upcoming, straightness, net / elapsed
+
+
 def _empty_table():
     table = pd.DataFrame(columns=ID_COLUMNS + FEATURE_COLUMNS)
     return table.astype({"obs_idx": np.int32, "arc_id": np.int32})
@@ -162,6 +207,9 @@ def build_candidates(trip, config=CandidateConfig()):
 
     motion, known = _motion(points, config.heading_window, config.min_heading_move_m)
     heading_cos = np.sum(motion[pos] * direction, axis=1)
+    carried, upcoming, straightness, net_speed = _steady_motion(points, times, config)
+    carried_cos = np.sum(carried[pos] * direction, axis=1)
+    next_cos = np.sum(upcoming[pos] * direction, axis=1)
 
     context = [
         np.minimum(
@@ -175,7 +223,7 @@ def build_candidates(trip, config=CandidateConfig()):
     # The anchor is each point's most plausible arc by simple geometry. It gives
     # every candidate context about its neighbours without using any labels.
     anchor_score = (
-        -0.5 * (dist / config.anchor_sigma_m) ** 2 + config.anchor_heading_weight * heading_cos
+        -0.5 * (dist / config.anchor_sigma_m) ** 2 + config.anchor_heading_weight * carried_cos
     )
     anchor_rows = np.flatnonzero(_rank_within(pos, anchor_score) == 0)
     anchor = np.full(n_points, -1, dtype=np.int64)
@@ -222,7 +270,11 @@ def build_candidates(trip, config=CandidateConfig()):
         "f_arc_length_log": np.log1p(length),
         "f_heading_cos": heading_cos,
         "f_heading_known": known[pos],
-        "f_heading_rank": _rank_within(pos, heading_cos),
+        "f_heading_rank": _rank_within(pos, carried_cos),
+        "f_heading_cos_carried": carried_cos,
+        "f_heading_cos_next": next_cos,
+        "f_straightness": straightness[pos],
+        "f_net_speed_mps": net_speed[pos],
         "f_context_dist_mean_m": context.mean(axis=0),
         "f_context_dist_max_m": context.max(axis=0),
         "f_anchor_match": arc == anchor[pos],
