@@ -34,3 +34,11 @@ To Sharanya: pull and rerun `python -m features.build_dataset` again before trai
 To Shriya: add `optuna` to the requirements. Arc `-1` now means no road within 50 m of that GPS point
 To Abdullah: the report must describe Bayesian tuning only
 Contract change: candidate radius is 50 m. Rule added to `CLAUDE.md`
+## 2026-11-18 12:41
+Done: candidates are back to 60 m with up to 24 per point, matching the final model. A rebuild reproduced Sharanya's tuned student-test Top-1, Macro F1 and log loss exactly. `hmm/hmm_config.json` is now tuned on held-out scores from the final random forest with 30 Optuna trials. Student-test Top-1 is 94.18 percent for the classifier and 96.84 percent with the HMM
+Next: report sections for preprocessing, features and HMM
+Blocked: none
+To Sharanya: no retraining is needed. Keep using tables built with 60 m. Your results still match
+To Shriya: pull, rerun `python -m features.build_dataset` if you use local tables, and switch to the real `models.inference.score`. Arc `-1` now means no road within 60 m of that GPS point. `hmm_config.json` is final unless the model changes
+To Abdullah: `hmm/outputs/hmm_comparison.csv` and `student_test_by_trip.csv` now use the final model, so report figures can use them
+Contract change: candidate radius is 60 m again
