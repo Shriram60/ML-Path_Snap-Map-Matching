@@ -57,3 +57,9 @@ To Shriya: pull on Laptop 2 before the two-laptop test. Laptop 1 is mine
 To Sharanya: classifier-only Top-1 is unchanged at 94.18 percent. Route continuity for it is 95.71 percent when all GPS points are used
 To Abdullah: use `hmm/outputs/hmm_comparison.csv` and `student_test_by_trip.csv` for report figures. They now match the API
 Contract change: `hmm_config.json` values changed, same format
+
+## 2026-11-18 15:05
+Done: two-laptop test passed over a phone hotspot. Laptop 2 at `172.20.10.7` ran all 10 student-test trips through the API on my laptop, every `/predict` returned 200, and the logged metrics match `hmm/outputs/student_test_by_trip.csv`
+Next: report sections for preprocessing, features and HMM
+Blocked: none
+To Shriya: please check your UI screenshots are saved for section 7. I have the Laptop 1 console screenshots
