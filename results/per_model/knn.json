@@ -1,0 +1,23 @@
+{
+  "model": "knn",
+  "family": "Instance-based",
+  "config": "{\"n_neighbors\": 25, \"weights\": \"distance\"}",
+  "train_top1": 1.0,
+  "train_macro_f1": 1.0,
+  "cv_top1_mean": 0.9212727676681125,
+  "cv_top1_std": 0.022844794726948947,
+  "cv_macro_f1_mean": 0.9578041731122837,
+  "cv_macro_f1_std": 0.012731712223298358,
+  "cv_log_loss_mean": 0.07032188047500389,
+  "test_top1": 0.9201100381765103,
+  "test_macro_f1": 0.9576850593125741,
+  "test_precision": 0.9396586871687344,
+  "test_recall": 0.9057377049180327,
+  "test_accuracy": 0.9871307496871563,
+  "test_log_loss": 0.05634311459762808,
+  "test_route_continuity": 0.9531529376499135,
+  "test_candidate_miss_rate": 0.0,
+  "train_time_s": 0.6264154999516904,
+  "inference_ms_per_1k_rows": 1668.6703319934634,
+  "confusion_matrix": "[[192120, 1036], [1679, 16133]]"
+}

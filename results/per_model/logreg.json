@@ -1,0 +1,23 @@
+{
+  "model": "logreg",
+  "family": "Linear",
+  "config": "{\"C\": 1.0, \"max_iter\": 1000}",
+  "train_top1": 0.923728813559322,
+  "train_macro_f1": 0.9595038678268069,
+  "cv_top1_mean": 0.9173583764056819,
+  "cv_top1_std": 0.026279599346618464,
+  "cv_macro_f1_mean": 0.9550893396252427,
+  "cv_macro_f1_std": 0.01402185139707774,
+  "cv_log_loss_mean": 0.05015764601006464,
+  "test_top1": 0.9175836514709185,
+  "test_macro_f1": 0.9560501547195606,
+  "test_precision": 0.9266206739266777,
+  "test_recall": 0.9124185942061531,
+  "test_accuracy": 0.9865050623791286,
+  "test_log_loss": 0.04105414572318442,
+  "test_route_continuity": 0.9420409824758442,
+  "test_candidate_miss_rate": 0.0,
+  "train_time_s": 3.236941699986346,
+  "inference_ms_per_1k_rows": 0.5874402750736268,
+  "confusion_matrix": "[[191869, 1287], [1560, 16252]]"
+}

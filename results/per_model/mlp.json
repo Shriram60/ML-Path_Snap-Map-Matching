@@ -1,0 +1,23 @@
+{
+  "model": "mlp",
+  "family": "Neural network",
+  "config": "{\"hidden_layer_sizes\": [64, 32], \"alpha\": 0.0001, \"learning_rate_init\": 0.001, \"batch_size\": 512, \"max_iter\": 40, \"early_stopping\": true, \"random_state\": 42}",
+  "train_top1": 0.9584745762711865,
+  "train_macro_f1": 0.9738429421856394,
+  "cv_top1_mean": 0.9381775409366778,
+  "cv_top1_std": 0.017678300200442816,
+  "cv_macro_f1_mean": 0.9637572812301288,
+  "cv_macro_f1_std": 0.009870605895797493,
+  "cv_log_loss_mean": 0.03773392426330336,
+  "test_top1": 0.9398719964069167,
+  "test_macro_f1": 0.9645506262610055,
+  "test_precision": 0.9589752671034768,
+  "test_recall": 0.9120817426454076,
+  "test_accuracy": 0.9892827348223427,
+  "test_log_loss": 0.03146165824594759,
+  "test_route_continuity": 0.9617982980439835,
+  "test_candidate_miss_rate": 0.0,
+  "train_time_s": 127.25994050002191,
+  "inference_ms_per_1k_rows": 0.6478143605749666,
+  "confusion_matrix": "[[192461, 695], [1566, 16246]]"
+}

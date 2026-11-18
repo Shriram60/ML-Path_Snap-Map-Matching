@@ -1,0 +1,23 @@
+{
+  "model": "random_forest",
+  "family": "Ensemble (bagging)",
+  "config": "{\"n_estimators\": 150, \"min_samples_leaf\": 5, \"max_features\": 0.2, \"max_depth\": 40, \"random_state\": 42}",
+  "train_top1": 0.9782485875706215,
+  "train_macro_f1": 0.9851258603158707,
+  "cv_top1_mean": 0.941606199478889,
+  "cv_top1_std": 0.014404352913963232,
+  "cv_macro_f1_mean": 0.9675111735322579,
+  "cv_macro_f1_std": 0.008690648376923077,
+  "cv_log_loss_mean": 0.032099343902386515,
+  "test_top1": 0.9404895576016169,
+  "test_macro_f1": 0.967959674940684,
+  "test_precision": 0.9561012335669196,
+  "test_recall": 0.9268470693914215,
+  "test_accuracy": 0.9902307458951121,
+  "test_log_loss": 0.02758414813783048,
+  "test_route_continuity": 0.9577075231503949,
+  "test_candidate_miss_rate": 0.0,
+  "train_time_s": 146.8352920000325,
+  "inference_ms_per_1k_rows": 9.255027302760258,
+  "confusion_matrix": "[[192398, 758], [1303, 16509]]"
+}
