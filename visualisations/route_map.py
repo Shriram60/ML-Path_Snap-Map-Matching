@@ -72,13 +72,13 @@ def build_map(pipeline, trip_dir, partition, show_reference=True):
     trip = pipeline.funcs["load_trip"](trip_dir)
     result = pipeline.predict(trip_dir, log_prefix="map")
 
-    track = np.asarray(trip.track, dtype=float)
+    track = trip.track[["lon", "lat"]].to_numpy(dtype=float)
     nodes = np.asarray(trip.nodes, dtype=float)
     arcs = np.asarray(trip.arcs, dtype=np.int64)
     show_reference = show_reference and partition in DEV_PARTITIONS and trip.route is not None
 
     m = folium.Map(tiles="OpenStreetMap", control_scale=True)
-    m.fit_bounds([[track[:, 1].min(), track[:, 0].min()], [track[:, 1].max(), track[:, 0].max()]])
+    m.fit_bounds([[track[:, 1].min(), track[:, 0].min()], [track[:, 1].max(), track[:, 0].max()]], padding=(30, 30))
 
     roads = folium.FeatureGroup(name="Nearby road network")
     road_lines = arc_lines(nearby_arcs(track, nodes, arcs), nodes, arcs)
@@ -97,14 +97,13 @@ def build_map(pipeline, trip_dir, partition, show_reference=True):
         folium.PolyLine(result["route"], color=COLOURS["predicted"], weight=3.5, opacity=0.9).add_to(pred)
     pred.add_to(m)
 
-    arc_of = {p["obs_idx"]: p["arc_id"] for p in result["predicted"]}
     step = max(1, len(result["gps"]) // MAX_GPS_DRAWN)
     gps = folium.FeatureGroup(name=f"GPS points (every {step})" if step > 1 else "GPS points")
     for i in range(0, len(result["gps"]), step):  # small circles, coloured by whether a road was assigned
-        arc = arc_of.get(i, -1)
+        arc = result["predicted"][i]["arc_id"]  # predicted[i] belongs to gps[i]
         folium.CircleMarker(result["gps"][i], radius=2.5, weight=0, fill=True, fill_opacity=0.8,
                             fill_color=COLOURS["gps"] if arc >= 0 else COLOURS["unmatched"],
-                            tooltip=f"point {i}, arc {arc if arc >= 0 else 'none'}").add_to(gps)
+                            tooltip=f"point {result['predicted'][i]['obs_idx']}, arc {arc if arc >= 0 else 'none'}").add_to(gps)
     gps.add_to(m)
 
     ends = folium.FeatureGroup(name="Start / end")
