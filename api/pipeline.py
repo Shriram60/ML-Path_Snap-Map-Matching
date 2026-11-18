@@ -105,7 +105,9 @@ class Pipeline:
         timings["candidates"] = _ms(t0)
 
         t0 = time.perf_counter()
-        scored = f["score"](candidates.drop(columns=["label"], errors="ignore"))
+        # Defensive: candidates built from blind_trip have no reference columns,
+        # but make sure none could ever reach the model.
+        scored = f["score"](candidates.drop(columns=["ref_arc", "label"], errors="ignore"))
         timings["score"] = _ms(t0)
 
         t0 = time.perf_counter()
@@ -125,15 +127,18 @@ class Pipeline:
             metrics["candidate_miss_rate"] = _num(point.get("candidate_miss_rate"))
             timings["metrics"] = _ms(t0)
 
-        track = np.asarray(trip.track, dtype=float)
+        lonlat, obs_ids = _track_points(trip)
         nodes = np.asarray(trip.nodes, dtype=float)
         arcs = np.asarray(trip.arcs, dtype=np.int64)
-        pred_arcs = np.asarray(pred["arc_id"], dtype=np.int64)
-        pred_obs = np.asarray(pred["obs_idx"], dtype=np.int64)
+        # One prediction per GPS point, in the same order as "gps", so the UI can
+        # pair gps[i] with predicted[i]. Points the decoder skipped get -1.
+        arc_by_obs = dict(zip(np.asarray(pred["obs_idx"], dtype=np.int64), np.asarray(pred["arc_id"], dtype=np.int64)))
+        pred_obs = obs_ids
+        pred_arcs = np.array([arc_by_obs.get(o, -1) for o in obs_ids], dtype=np.int64)
 
         response = {
             "trip_id": str(trip.trip_id),
-            "gps": [[round(lat, 7), round(lon, 7)] for lon, lat in track[:, :2]],
+            "gps": [[round(float(lat), 7), round(float(lon), 7)] for lon, lat in lonlat],
             "predicted": [{"obs_idx": int(o), "arc_id": int(a)} for o, a in zip(pred_obs, pred_arcs)],
             "route": _route_polyline(pred_arcs, nodes, arcs),
             "metrics": metrics,
@@ -141,14 +146,27 @@ class Pipeline:
 
         assigned = int((pred_arcs >= 0).sum())
         log.info("%s trip %s | %d GPS points, %d candidates, %d/%d points matched",
-                 log_prefix, response["trip_id"], len(track), len(candidates), assigned, len(pred_arcs))
+                 log_prefix, response["trip_id"], len(lonlat), len(candidates), assigned, len(pred_arcs))
         log.info("%s trip %s | times ms: %s", log_prefix, response["trip_id"],
                  ", ".join(f"{k} {v:.0f}" for k, v in timings.items()))
         log.info("%s trip %s | metrics: %s", log_prefix, response["trip_id"], metrics)
         return response
 
 
+def _track_points(trip):
+    """GPS points as (lon, lat) plus their obs_idx, in track order."""
+    track = trip.track
+    if hasattr(track, "columns") and {"lon", "lat"} <= set(track.columns):
+        lonlat = track[["lon", "lat"]].to_numpy(dtype=float)
+        obs = track["obs_idx"].to_numpy(dtype=np.int64) if "obs_idx" in track.columns else np.arange(len(track))
+        return lonlat, obs
+    arr = np.asarray(track, dtype=float)
+    return arr[:, :2], np.arange(len(arr))
+
+
 def _without_route(trip):
+    if hasattr(trip, "without_route"):
+        return trip.without_route()  # Shriram's loader provides this
     if dataclasses.is_dataclass(trip):
         return dataclasses.replace(trip, route=None)
     blind = copy.copy(trip)

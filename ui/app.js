@@ -175,14 +175,14 @@ function clearLayers() {
 
 function drawMap(r) {
   clearLayers();
-  const arcByObs = new Map(r.predicted.map((p) => [p.obs_idx, p.arc_id]));
-
+  // The API returns predicted[i] for gps[i], in the same order.
   r.gps.forEach(([lat, lon], i) => {
-    const arc = arcByObs.has(i) ? arcByObs.get(i) : -1;
+    const arc = r.predicted[i] ? r.predicted[i].arc_id : -1;
+    const obs = r.predicted[i] ? r.predicted[i].obs_idx : i;
     L.circleMarker([lat, lon], {
       radius: 3, weight: 0, fillOpacity: 0.75,
       fillColor: arc >= 0 ? "#2b59c3" : "#f79009",
-    }).bindTooltip(`point ${i}<br>arc ${arc >= 0 ? arc : "none"}`).addTo(layers.gps);
+    }).bindTooltip(`point ${obs}<br>arc ${arc >= 0 ? arc : "none"}`).addTo(layers.gps);
   });
 
   if (r.route.length > 1) {
