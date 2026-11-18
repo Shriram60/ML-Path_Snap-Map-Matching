@@ -42,3 +42,9 @@ To Sharanya: no retraining is needed. Keep using tables built with 60 m. Your re
 To Shriya: pull, rerun `python -m features.build_dataset` if you use local tables, and switch to the real `models.inference.score`. Arc `-1` now means no road within 60 m of that GPS point. `hmm_config.json` is final unless the model changes
 To Abdullah: `hmm/outputs/hmm_comparison.csv` and `student_test_by_trip.csv` now use the final model, so report figures can use them
 Contract change: candidate radius is 60 m again
+## 2026-11-18 14:40
+Done: added the root `README.md`. The API ran all 10 student-test trips with the real model and final HMM, with no placeholder in use and no reference fields in responses. The two-laptop run is still not tested
+Next: report sections for preprocessing, features and HMM
+Blocked: none
+To Shriya: if you have your own README, merge it into this one when you pull. Please add `matplotlib` to `deployment/requirements-api.txt` and run the two-laptop test
+To Abdullah: live API scores decode every GPS point, while `hmm/outputs` decodes labelled points only, so small differences per trip are expected. Do not put both in one table until I confirm which set the report uses
