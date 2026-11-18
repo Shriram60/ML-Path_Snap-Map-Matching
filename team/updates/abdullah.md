@@ -127,3 +127,17 @@ Only Abdullah edits this file. Append new entries at the bottom.
 
 ### Blocked
 - None.
+
+
+## 2026-11-18 — Consolidated Technical Report
+
+### Done
+- Completed all eight sections of the consolidated PathSnap technical report.
+- Added model comparison, Bayesian optimisation and HMM evaluation charts.
+- Added geographical visualisation screenshots.
+- Documented EDA findings, API QA results and two-laptop deployment.
+- Generated `report/PathSnap_Technical_Report.pdf`.
+- Rebuilt the PDF after correcting the contents-page titles and removing EDA figure placeholders.
+
+### Blocked
+- None.
