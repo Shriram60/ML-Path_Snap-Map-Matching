@@ -18,3 +18,11 @@ Blocked: final `p_match` scores from Sharanya
 To Sharanya: when the model is exported, tell me. All current HMM numbers and `hmm/hmm_config.json` use a temporary baseline model, so they must not go in the report or model comparison
 To Shriya: the API flow is `load_trip`, `build_candidates`, `models.inference.score`, `decode`. Arc `-1` means no road within 60 m of that GPS point. Keep references server-side, and use `features.labels.reference_table` with `hmm.route_metrics.score_trip` for metrics
 To Abdullah: `hmm/outputs/hmm_comparison.csv` is temporary, wait for the final version before making report figures
+## 2026-11-18 10:45
+Done: labels now use driving direction, and stopped points on out-and-back roads have no reference because their direction cannot be known. Added 4 features for stops and carried heading, so there are now 29 `f_` features
+Next: rerun decoder tuning when the final model exists
+Blocked: final `p_match` scores from Sharanya
+To Sharanya: pull and rerun `python -m features.build_dataset` before training. Any table built before this entry has old labels and must be rebuilt. Read feature names from columns starting with `f_` rather than hardcoding them
+To Shriya: no API change, but rebuild if you have a local table
+To Abdullah: stopped vehicles show large apparent speed from GPS jitter, for example in trip 00000077. This is worth covering in your GPS quality analysis
+Contract change: label definition and feature list changed, column layout is otherwise the same
