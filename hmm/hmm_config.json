@@ -2,12 +2,12 @@
   "source": "final tuned random forest",
   "parameters": {
     "emission_weight": 1.0,
-    "transition_scale_m": 2.2632628205101586,
-    "unreachable_penalty": 104.86053673344033,
+    "transition_scale_m": 1.9454682922675062,
+    "unreachable_penalty": 43.20945055302135,
     "search_radius_m": 300.0,
     "route_slack_factor": 2.0,
     "break_distance_m": 1500.0,
-    "backward_tolerance_m": 37.77639533314159,
+    "backward_tolerance_m": 39.62166108562293,
     "min_probability": 1e-06
   }
 }

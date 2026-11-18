@@ -1,5 +1,5 @@
 score_source,dataset,method,top1_accuracy,route_continuity,reachable_continuity,route_f1
-final tuned random forest,tuning,classifier_only,0.92866,0.95203,0.98196,0.95743
-final tuned random forest,tuning,hmm,0.94760,0.97304,0.99996,0.98015
-final tuned random forest,student_test,classifier_only,0.94178,0.95869,0.98601,0.96714
-final tuned random forest,student_test,hmm,0.96845,0.98153,0.99984,0.98612
+final tuned random forest,tuning,classifier_only,0.92866,0.95085,0.98133,0.95743
+final tuned random forest,tuning,hmm,0.94551,0.97291,0.99964,0.97895
+final tuned random forest,student_test,classifier_only,0.94178,0.95714,0.98618,0.96714
+final tuned random forest,student_test,hmm,0.96738,0.98179,0.99984,0.98670
