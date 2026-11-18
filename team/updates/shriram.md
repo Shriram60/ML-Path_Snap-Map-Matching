@@ -26,3 +26,11 @@ To Sharanya: pull and rerun `python -m features.build_dataset` before training. 
 To Shriya: no API change, but rebuild if you have a local table
 To Abdullah: stopped vehicles show large apparent speed from GPS jitter, for example in trip 00000077. This is worth covering in your GPS quality analysis
 Contract change: label definition and feature list changed, column layout is otherwise the same
+## 2026-11-18 10:56
+Done: faculty confirmed that hyperparameter tuning must be Bayesian only, with no grid or random search. Candidate settings and decoder settings are now tuned with Optuna. Candidates are now within 50 m, up to 24 per point
+Next: rerun decoder tuning when the final model exists
+Blocked: final `p_match` scores from Sharanya
+To Sharanya: pull and rerun `python -m features.build_dataset` again before training, because the candidate radius changed. Use Bayesian optimisation only, and do not use `GridSearchCV` or `RandomizedSearchCV` anywhere
+To Shriya: add `optuna` to the requirements. Arc `-1` now means no road within 50 m of that GPS point
+To Abdullah: the report must describe Bayesian tuning only
+Contract change: candidate radius is 50 m. Rule added to `CLAUDE.md`

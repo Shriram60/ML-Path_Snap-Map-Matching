@@ -65,6 +65,7 @@ Answer a question by adding an entry to your own file. Update files hold facts a
 ## Hackathon rules that must not be broken
 
 - Never invent metrics, plots, logs or results. Every reported number must come from code in this repo.
+- All hyperparameter tuning must use Bayesian optimisation. Grid search and random search are not allowed (faculty instruction, 2026-11-18). Do not use `GridSearchCV` or `RandomizedSearchCV`.
 - Never hardcode predictions, trip answers or evaluation trip IDs.
 - Evaluator trips must not be used for training, feature selection, model choice, tuning or decoder settings.
 - Ground truth stays on the server. It must never reach the model inputs or the UI.
