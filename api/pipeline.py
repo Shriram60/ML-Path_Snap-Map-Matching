@@ -15,7 +15,6 @@ leak into the prediction. Nothing from the reference route is returned.
 import copy
 import dataclasses
 import importlib
-import json
 import logging
 import time
 
@@ -25,15 +24,15 @@ from api import config
 
 log = logging.getLogger("pathsnap")
 
-# contract name -> module that owns it
+# function name -> module that owns it
 CONTRACT = {
-    "load_trip": "data_processing.loader",
-    "build_candidates": "features.candidates",
-    "add_labels": "features.labels",
-    "score": "models.inference",
-    "decode": "hmm.viterbi",
-    "point_metrics": "evaluation.metrics",
-    "route_continuity": "evaluation.metrics",
+    "load_trip": "data_processing.loader",        # Shriram
+    "build_candidates": "features.candidates",    # Shriram
+    "score": "models.inference",                  # Sharanya, trained model
+    "decode": "hmm.viterbi",                      # Shriram, Viterbi
+    "load_config": "hmm.viterbi",                 # Shriram, reads hmm/hmm_config.json
+    "reference_table": "features.labels",         # Shriram, server-side reference per GPS point
+    "score_trip": "hmm.route_metrics",            # Shriram, Top-1 and continuity against references
 }
 
 
@@ -65,12 +64,10 @@ class Pipeline:
         self.hmm_config = self._load_hmm_config()
 
     def _load_hmm_config(self):
-        path = config.HMM_CONFIG_PATH
-        if path.exists():
-            return json.loads(path.read_text())
-        if self.uses_placeholder:
-            return {}
-        raise RuntimeError(f"{path} not found. Shriram exports it from hmm/.")
+        # Loaded once at startup and reused for every request.
+        if not config.HMM_CONFIG_PATH.exists():
+            raise RuntimeError(f"{config.HMM_CONFIG_PATH} not found. Shriram exports it from hmm/.")
+        return self.funcs["load_config"]()
 
     def describe(self):
         lines = [f"  {name:<17} from {src}" for name, src in self.sources.items()]
@@ -115,16 +112,17 @@ class Pipeline:
         timings["decode"] = _ms(t0)
         inference_ms = _ms(start)
 
-        metrics = {"top1_accuracy": None, "route_continuity": None, "macro_f1": None,
+        metrics = {"top1_accuracy": None, "route_continuity": None, "route_f1": None,
                    "candidate_miss_rate": None, "inference_ms": round(inference_ms, 1)}
-        metrics["route_continuity"] = _num(f["route_continuity"](pred, blind_trip))
         if reference_route is not None:
+            # Only here, after prediction, does the reference route get used.
             t0 = time.perf_counter()
-            labelled = f["add_labels"](candidates, trip)
-            point = f["point_metrics"](pred, labelled)
-            metrics["top1_accuracy"] = _num(point.get("top1_accuracy"))
-            metrics["macro_f1"] = _num(point.get("macro_f1"))
-            metrics["candidate_miss_rate"] = _num(point.get("candidate_miss_rate"))
+            references = f["reference_table"](trip)
+            result = f["score_trip"](pred, references, trip)
+            metrics["top1_accuracy"] = _num(result.get("top1_accuracy"))
+            metrics["route_continuity"] = _num(result.get("route_continuity"))
+            metrics["route_f1"] = _num(result.get("route_f1"))
+            metrics["candidate_miss_rate"] = _num(_candidate_miss_rate(candidates, references))
             timings["metrics"] = _ms(t0)
 
         lonlat, obs_ids = _track_points(trip)
@@ -151,6 +149,16 @@ class Pipeline:
                  ", ".join(f"{k} {v:.0f}" for k, v in timings.items()))
         log.info("%s trip %s | metrics: %s", log_prefix, response["trip_id"], metrics)
         return response
+
+
+def _candidate_miss_rate(candidates, references):
+    """Share of referenced GPS points whose reference arc is not among their candidates."""
+    ref = references.loc[references["ref_arc"] >= 0, ["obs_idx", "ref_arc"]]
+    if ref.empty:
+        return None
+    pairs = candidates[["obs_idx", "arc_id"]].rename(columns={"arc_id": "ref_arc"}).drop_duplicates()
+    found = ref.merge(pairs.assign(found=1), on=["obs_idx", "ref_arc"], how="left")["found"].notna()
+    return 1.0 - found.mean()
 
 
 def _track_points(trip):

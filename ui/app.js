@@ -144,7 +144,7 @@ function showResult(r) {
   $("m-points").textContent = `${matched} / ${r.gps.length}`;
   $("metrics").hidden = false;
   const extras = [];
-  if (m.macro_f1 !== undefined && m.macro_f1 !== null) extras.push(`Macro F1 ${pct(m.macro_f1)}`);
+  if (m.route_f1 !== undefined && m.route_f1 !== null) extras.push(`Route F1 ${pct(m.route_f1)}`);
   if (m.candidate_miss_rate !== undefined && m.candidate_miss_rate !== null) extras.push(`Candidate miss rate ${pct(m.candidate_miss_rate)}`);
   $("extra-metrics").textContent = extras.join("  |  ");
   drawMap(r);
