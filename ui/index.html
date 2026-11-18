@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PathSnap - route reconstruction</title>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside id="panel">
+    <header>
+      <h1>PathSnap</h1>
+      <p class="sub">Map-matching and route reconstruction</p>
+    </header>
+
+    <section>
+      <label for="api-url">API address (Laptop 1)</label>
+      <div class="row">
+        <input id="api-url" type="text" spellcheck="false">
+        <button id="connect">Connect</button>
+      </div>
+      <p id="api-status" class="status">Not connected</p>
+    </section>
+
+    <div id="placeholder-banner" hidden>
+      Placeholder pipeline in use on the server. These results do not come from the trained model.
+    </div>
+
+    <section>
+      <h2>Evaluation trips</h2>
+      <div id="trips" class="trips"><p class="muted">Connect to load trips.</p></div>
+    </section>
+
+    <section>
+      <h2>Result</h2>
+      <p id="run-status" class="status muted">Pick a trip.</p>
+      <div id="metrics" class="metrics" hidden>
+        <div class="metric"><span class="value" id="m-top1">-</span><span class="name">Top-1 accuracy</span></div>
+        <div class="metric"><span class="value" id="m-cont">-</span><span class="name">Route continuity</span></div>
+        <div class="metric"><span class="value" id="m-time">-</span><span class="name">Inference time</span></div>
+        <div class="metric"><span class="value" id="m-points">-</span><span class="name">GPS points matched</span></div>
+      </div>
+      <p id="extra-metrics" class="muted small"></p>
+      <button id="retry" hidden>Retry</button>
+    </section>
+
+    <footer class="muted small">Metrics are computed on the API server. The UI never receives the reference route.</footer>
+  </aside>
+
+  <main>
+    <div id="map"></div>
+    <div id="legend">
+      <div><span class="swatch gps"></span>GPS point (matched)</div>
+      <div><span class="swatch gps-miss"></span>GPS point (no road assigned)</div>
+      <div><span class="swatch route"></span>Predicted route</div>
+      <div><span class="swatch start"></span>Start <span class="swatch end"></span>End</div>
+    </div>
+  </main>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
