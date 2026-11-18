@@ -1,0 +1,43 @@
+{
+  "model": "random_forest",
+  "feature_columns": [
+    "f_dist_m",
+    "f_dist_rank",
+    "f_dist_gap_to_best_m",
+    "f_dist_ratio_to_best",
+    "f_signed_offset_m",
+    "f_along_arc",
+    "f_dist_to_arc_end_m",
+    "f_arc_length_log",
+    "f_heading_cos",
+    "f_heading_known",
+    "f_heading_rank",
+    "f_heading_cos_carried",
+    "f_heading_cos_next",
+    "f_straightness",
+    "f_net_speed_mps",
+    "f_context_dist_mean_m",
+    "f_context_dist_max_m",
+    "f_anchor_match",
+    "f_anchor_support",
+    "f_connected_prev",
+    "f_connected_next",
+    "f_from_out_degree",
+    "f_to_out_degree",
+    "f_has_reverse",
+    "f_speed_mps",
+    "f_step_prev_m",
+    "f_dt_prev_log",
+    "f_dt_next_log",
+    "f_n_candidates"
+  ],
+  "params": {
+    "n_estimators": 247,
+    "min_samples_leaf": 6,
+    "max_features": 0.7437480042825764,
+    "max_depth": 16
+  },
+  "output_column": "p_match",
+  "trained_rows": 359066,
+  "seed": 42
+}
