@@ -2,9 +2,9 @@
 
 The objective balances two costs: missing the true road, and adding candidates.
 One extra candidate per point must cut the miss rate by at least 0.05 percentage
-points to be worthwhile. The radius search starts at 50 m, the largest distance
-allowed between a labelled point and its reference arc, so every reference arc
-stays within reach.
+points to be worthwhile. The radius search starts at 60 m, which is 10 m beyond
+the largest distance allowed between a labelled point and its reference arc, so
+roads just past that limit stay available when there are no labels.
 """
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
@@ -56,7 +56,7 @@ def main():
     n_points = len(ref_rank)
 
     def objective(trial):
-        radius = trial.suggest_int("radius_m", 50, MAX_RADIUS_M)
+        radius = trial.suggest_int("radius_m", 60, MAX_RADIUS_M)
         count = trial.suggest_int("max_candidates", 4, 40)
         miss_rate = float(np.mean((ref_dist > radius) | (ref_rank >= count)))
         per_point = np.bincount(pos[dist <= radius], minlength=n_points)
