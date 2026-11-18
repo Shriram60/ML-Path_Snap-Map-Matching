@@ -48,7 +48,8 @@ FEATURE_COLUMNS = [
 
 @dataclass(frozen=True)
 class CandidateConfig:
-    radius_m: float = 60.0
+    # Best values from features/candidate_tuning.py
+    radius_m: float = 50.0
     max_candidates: int = 24
     sample_spacing_m: float = 10.0
     heading_window: int = 2
