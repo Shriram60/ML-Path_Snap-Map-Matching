@@ -96,3 +96,13 @@ Only Abdullah edits this file. Append new entries at the bottom.
 
 ### Blocked
 - None.
+
+## Task 5: Interactive trip maps
+
+- Created `eda/trip_map.py` using Folium.
+- Generated five interactive maps for trips 00000002, 00000033, 00000054, 00000043 and 00000096.
+- Maps include GPS tracks, reference routes, nearby road networks, start/end markers, legends and layer controls.
+- Added road-network filtering around each trip, with a maximum of 15,000 displayed road segments.
+- Saved generated HTML maps outside the repository in `$PATHSNAP_WORK/eda/maps/`.
+- Successfully tested the map generator and visually inspected the generated maps.
+- No blockers.
