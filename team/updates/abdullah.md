@@ -69,3 +69,30 @@ Only Abdullah edits this file. Append new entries at the bottom.
 
 ### Blocked
 - None.
+
+
+## 2026-11-18 — Task 4: Route Fit Analysis
+
+### Done
+- Created `eda/route_fit.py`.
+- Analysed all 90 trips.
+- Implemented vectorised point-to-segment distance calculation using NumPy.
+- Converted longitude and latitude into local metre coordinates.
+- Added protection against zero-length route segments.
+- Calculated median, p95, maximum and percentage of GPS points beyond 50 metres.
+- Calculated first and last GPS point distances.
+- Generated route fit CSV and plots.
+- Saved outputs under PATHSNAP_WORK/eda.
+
+### Findings for Shriram
+- Trips 00000054 and 00000033 have very poor overall route fit.
+- Trip 00000002 has 868 GPS points beyond 50 metres and a maximum distance of 569.49 metres.
+- Additional trips worth investigating include 00000043, 00000096, 00000066, 00000084 and 00000081.
+- 23 trips have at least one GPS point beyond 50 metres.
+- No GPS observations were removed.
+
+### Next
+- Task 5: Interactive Folium trip maps.
+
+### Blocked
+- None.
