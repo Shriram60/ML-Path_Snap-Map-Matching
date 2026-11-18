@@ -22,3 +22,10 @@ Blocked: `models.inference.score`, `hmm.viterbi.decode`, `evaluation.metrics`, `
 To Shriram: thanks, the loader worked with no changes on your side. The API compares predictions to `ref_arc` from `add_labels`, assuming both are canonical arc IDs. Please confirm `decode` returns canonical IDs, as candidates do.
 To Sharanya: `point_metrics(pred, labelled)` gets `labelled` straight from `add_labels`, which keeps only points with a reliable reference and includes `ref_arc`. For candidate miss rate, please compute it the way CLAUDE.md says (references table) inside your function. My placeholder version reports 0 for every trip because `add_labels` drops points that have no candidates.
 Contract change: `/predict` `predicted` has exactly one entry per returned `gps` point, in the same order.
+
+## 2026-11-18 10:45
+Done: the API now uses Shriram's real `hmm.viterbi.decode` (config loaded once at startup with `load_config`), and computes metrics with `features.labels.reference_table` and `hmm.route_metrics.score_trip` after prediction, on the server only. All 10 student_test trips run in 0.1 to 1.9 s round trip, the UI and maps work, and no response contains reference data. `/predict` metrics are `top1_accuracy`, `route_continuity` (strict), `route_f1`, `candidate_miss_rate` and `inference_ms`.
+Next: switching `score` to the trained model when it is exported. It is the only placeholder left.
+Blocked: `models.inference.score` and `models/artifacts/final_model.joblib` from Sharanya.
+To Sharanya: the API calls `score(candidates)` on the table from `build_candidates` with no `ref_arc` or `label`. Please return it with `p_match` added and all other columns kept, because `decode` needs `f_along_arc`. Please also load the model once at module level.
+Contract change: the API no longer calls `add_labels`, `evaluation.metrics.point_metrics` or `route_continuity`. `macro_f1` is replaced by `route_f1` in the `/predict` metrics.
