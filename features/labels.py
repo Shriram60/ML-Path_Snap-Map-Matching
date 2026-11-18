@@ -5,11 +5,14 @@ point is therefore aligned to a route position with dynamic programming, under
 the constraint that the position can never move backwards.
 
 Cost of a point is its distance to the route arc, capped so that stretches of
-GPS away from the route do not distort the alignment. Skipping whole route arcs
+GPS away from the route do not distort the alignment, plus a cost for steady
+movement against the arc's direction. Skipping whole route arcs
 costs a little per metre, and less across a time gap, so loops are followed
 instead of jumped over. Points that stay too far from their aligned arc, lie
 beyond the ends of the route, or wander at the start or end of the trip for far
-longer than the arc itself get no reference arc (-1).
+longer than the arc itself get no reference arc (-1). The same applies to
+stopped points on a road the route drives out and straight back along, where
+the direction cannot be known.
 """
 from dataclasses import dataclass
 
@@ -17,12 +20,14 @@ import numpy as np
 import pandas as pd
 
 from data_processing.geometry import point_segment
+from features.candidates import motion_summary
 
 
 @dataclass(frozen=True)
 class LabelConfig:
     capped_distance_m: float = 60.0
     skip_penalty_per_m: float = 0.1
+    wrong_direction_cost_m: float = 20.0
     max_reference_distance_m: float = 50.0
     max_path_arc_ratio: float = 3.0
     path_allowance_m: float = 100.0
@@ -46,6 +51,19 @@ def _wandering_mask(trip, route_pos, config):
     return end_run & (run_path[runs] > limit)
 
 
+def _ambiguous_turnaround_mask(trip, route_pos):
+    """Flag stopped points on a road the route drives out and straight back.
+
+    The two directions share the same geometry, so without steady movement the
+    GPS cannot show which leg the vehicle was on.
+    """
+    route_arcs = trip.arcs[trip.route]
+    reverses = (route_arcs[:-1, 0] == route_arcs[1:, 1]) & (route_arcs[:-1, 1] == route_arcs[1:, 0])
+    in_pair = np.r_[reverses, False] | np.r_[False, reverses]
+    steady = motion_summary(trip.track_xy, trip.track["t"].to_numpy())[4]
+    return in_pair[route_pos] & ~steady
+
+
 def align_to_route(trip, config=LabelConfig()):
     """Return the route position, distance and along-arc position per GPS point."""
     if trip.route is None or len(trip.route) == 0:
@@ -64,10 +82,26 @@ def align_to_route(trip, config=LabelConfig()):
     previous = np.empty((n_points, n_arcs), dtype=np.int32)
     previous[0] = positions
 
+    # Opposite directions of a road have identical geometry, so steady movement
+    # against an arc's direction must cost something for the two to be separated.
+    net_vector, net, _, _, steady = motion_summary(points, trip.track["t"].to_numpy())
+    heading = np.zeros_like(points)
+    heading[steady] = net_vector[steady] / net[steady, None]
+    arc_direction = np.divide(
+        end_xy - start_xy,
+        lengths[:, None],
+        out=np.zeros_like(end_xy),
+        where=lengths[:, None] > 0,
+    )
+
     def point_cost(index):
-        return np.minimum(
+        distance = np.minimum(
             point_segment(points[index], start_xy, end_xy)[0], config.capped_distance_m
         )
+        if not steady[index]:
+            return distance
+        opposition = 0.5 * (1.0 - arc_direction @ heading[index])
+        return distance + config.wrong_direction_cost_m * opposition
 
     best = point_cost(0)
     for i in range(1, n_points):
@@ -103,6 +137,7 @@ def reference_table(trip, config=LabelConfig()):
         & ~before_route
         & ~after_route
         & ~wandering
+        & ~_ambiguous_turnaround_mask(trip, route_pos)
     )
     return pd.DataFrame(
         {

@@ -69,6 +69,21 @@ def test_points_far_from_route_have_no_reference(tmp_path):
     assert (reference_table(trip)["ref_arc"].to_numpy()[-10:] == -1).all()
 
 
+def test_stop_on_out_and_back_road_has_no_reference(tmp_path):
+    out = [(10 + (5 + i * 8.0) * METRE_LON, LAT, float(i + 1)) for i in range(20)]
+    stop = [
+        (10 + (150 + 8.0 * (-1) ** i) * METRE_LON, LAT + 6.0 * (-1) ** (i // 2) * METRE_LAT, 21.0 + i)
+        for i in range(20)
+    ]
+    back = [(10 + (150 - i * 8.0) * METRE_LON, LAT, 41.0 + i) for i in range(18)]
+    trip_dir = write_trip(tmp_path, out + stop + back)
+    pd.DataFrame([0, 3]).to_csv(trip_dir / "00000001.route", sep=" ", header=False, index=False)
+    table = reference_table(load_trip(trip_dir))
+    arcs = table["ref_arc"].to_numpy()
+    assert (arcs[26:34] == -1).all()
+    assert arcs[5] == 0 and arcs[50] == 3
+
+
 def test_candidates_ignore_route_and_heading_picks_direction(tmp_path):
     trip = load_trip(write_trip(tmp_path, eastbound()))
     with_route = build_candidates(trip)
