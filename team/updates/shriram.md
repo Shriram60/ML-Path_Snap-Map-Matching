@@ -48,3 +48,12 @@ Next: report sections for preprocessing, features and HMM
 Blocked: none
 To Shriya: if you have your own README, merge it into this one when you pull. Please add `matplotlib` to `deployment/requirements-api.txt` and run the two-laptop test
 To Abdullah: live API scores decode every GPS point, while `hmm/outputs` decodes labelled points only, so small differences per trip are expected. Do not put both in one table until I confirm which set the report uses
+
+## 2026-11-18 14:50
+Done: `hmm/final_scores.py` now scores every GPS point, so decoder tuning and `hmm/outputs` match the live API. `hmm/hmm_config.json` changed. Student-test with HMM is now Top-1 96.74 percent, continuity 98.18 percent, route F1 98.67 percent. Added `features/outputs/feature_importance.csv`
+Next: two-laptop test with my laptop as Laptop 1, then report sections
+Blocked: none
+To Shriya: pull on Laptop 2 before the two-laptop test. Laptop 1 is mine
+To Sharanya: classifier-only Top-1 is unchanged at 94.18 percent. Route continuity for it is 95.71 percent when all GPS points are used
+To Abdullah: use `hmm/outputs/hmm_comparison.csv` and `student_test_by_trip.csv` for report figures. They now match the API
+Contract change: `hmm_config.json` values changed, same format
