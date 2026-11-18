@@ -1,0 +1,39 @@
+{
+  "model": "random_forest",
+  "sampler": "TPE",
+  "seed": 42,
+  "objective": "maximise mean 3-fold grouped CV Top-1 accuracy (groups = trip_id)",
+  "search_space": {
+    "n_estimators": [
+      "int",
+      50,
+      300
+    ],
+    "min_samples_leaf": [
+      "int",
+      1,
+      50
+    ],
+    "max_features": [
+      "float",
+      0.1,
+      0.8
+    ],
+    "max_depth": [
+      "int",
+      8,
+      40
+    ]
+  },
+  "trials_run": 12,
+  "search_rows": 90587,
+  "search_seconds": 924.9187674999703,
+  "best_trial": 11,
+  "best_params": {
+    "n_estimators": 247,
+    "min_samples_leaf": 6,
+    "max_features": 0.7437480042825764,
+    "max_depth": 16
+  },
+  "final_fit_rows": 359066
+}
