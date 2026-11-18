@@ -10,5 +10,5 @@ optuna  # only for tuning scripts, not needed to run the API
 folium>=0.16
 # The saved model must be loaded with the same scikit-learn version it was
 # trained with. Sharanya: pin the exact versions from your training run here.
-scikit-learn
-joblib
+scikit-learn==1.9.1
+joblib==1.6.0
