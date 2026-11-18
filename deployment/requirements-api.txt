@@ -6,6 +6,7 @@ numpy>=1.26
 pandas>=2.1
 scipy>=1.11
 pyarrow
+optuna  # only for tuning scripts, not needed to run the API
 folium>=0.16
 # The saved model must be loaded with the same scikit-learn version it was
 # trained with. Sharanya: pin the exact versions from your training run here.

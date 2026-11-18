@@ -29,3 +29,8 @@ Next: switching `score` to the trained model when it is exported. It is the only
 Blocked: `models.inference.score` and `models/artifacts/final_model.joblib` from Sharanya.
 To Sharanya: the API calls `score(candidates)` on the table from `build_candidates` with no `ref_arc` or `label`. Please return it with `p_match` added and all other columns kept, because `decode` needs `f_along_arc`. Please also load the model once at module level.
 Contract change: the API no longer calls `add_labels`, `evaluation.metrics.point_metrics` or `route_continuity`. `macro_f1` is replaced by `route_f1` in the `/predict` metrics.
+
+## 2026-11-18 11:00
+Done: added optuna to deployment/requirements-api.txt for the tuning scripts.
+Next: switching score to the trained model when Sharanya exports it.
+Blocked: models.inference.score and models/artifacts/final_model.joblib.
