@@ -106,3 +106,24 @@ Only Abdullah edits this file. Append new entries at the bottom.
 - Saved generated HTML maps outside the repository in `$PATHSNAP_WORK/eda/maps/`.
 - Successfully tested the map generator and visually inspected the generated maps.
 - No blockers.
+
+## 2026-11-18 — Task 6: API QA Testing
+
+### Done
+- Created `qa/test_api.py` using Python unittest.
+- Tested API health endpoint and student-test trip listing.
+- Verified invalid trip IDs return HTTP 404.
+- Tested predictions for all 10 student-test trips.
+- Verified GPS and prediction counts are aligned for every trip.
+- Checked coordinate validity and prediction response structure.
+- Confirmed ground-truth and reference fields are not exposed in API responses.
+- Confirmed all responses use the trained pipeline.
+- All 4 automated QA tests passed.
+
+### Findings
+- All 10 student-test trips returned successful predictions.
+- Top-1 accuracy ranged from 90.16% to 99.82% across the trips.
+- No API QA test failures.
+
+### Blocked
+- None.
