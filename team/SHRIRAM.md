@@ -8,9 +8,8 @@ Read `CLAUDE.md` first. Everyone else depends on your candidate table, so ship a
 2. `features/labels.py`: `.route` gives arcs in order but has no per-point labels. Design and justify how each GPS point gets its reference arc, and record the limits of that method.
 3. `features/candidates.py`: generate candidate arcs per GPS point. Measure the candidate miss rate and how it changes with search radius or candidate count.
 4. `features/`: engineer the `f_` features and a script that builds the training and student-test tables.
-5. `eda/`: the inventory, missing-value analysis, GPS and road-network plots, connectivity checks, and at least one Folium map, each labelled with its data partition.
-6. `hmm/`: hidden states, emissions from `p_match`, transitions from road connectivity, Viterbi, missing candidates, GPS gaps and disconnected segments.
-7. Tune decoder settings on training and student-test data only, and compare classifier-only against classifier plus HMM, including cases where the HMM did not help.
+5. `hmm/`: hidden states, emissions from `p_match`, transitions from road connectivity, Viterbi, missing candidates, GPS gaps and disconnected segments.
+6. Tune decoder settings on training and student-test data only, and compare classifier-only against classifier plus HMM, including cases where the HMM did not help.
 
 ## Tell the team when
 
@@ -25,7 +24,7 @@ Read `CLAUDE.md` first. Everyone else depends on your candidate table, so ship a
 
 ## Report sections
 
-2.2 Dataset understanding and EDA, and 5 HMM and Viterbi. You also assemble the final PDF.
+The preprocessing and feature parts of 2.2, and 5 HMM and Viterbi. Abdullah owns the EDA code, writes the EDA part of 2.2 and assembles the final PDF. Use his route-fit results when checking labels.
 
 ## Viva
 

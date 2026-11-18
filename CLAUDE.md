@@ -1,16 +1,31 @@
 # PathSnap team instructions
 
-PathSnap is our UE24CS352A hackathon project: match noisy GPS points to road segments, then reconstruct the route with an HMM and Viterbi. Three people work on this, each with their own Claude on their own laptop.
+PathSnap is our UE24CS352A hackathon project: match noisy GPS points to road segments, then reconstruct the route with an HMM and Viterbi. Four people work on this. Shriram, Sharanya and Shriya each have a Claude on their own laptop. Abdullah codes without Claude, so make requests to him specific and self-contained.
 
 Ask your user who they are if it is not clear, then read their brief:
 
 | Person | Brief | Owns |
 |---|---|---|
-| Shriram | `team/SHRIRAM.md` | `data_processing/`, `features/`, `hmm/`, `eda/` |
+| Shriram | `team/SHRIRAM.md` | `data_processing/`, `features/`, `hmm/` |
 | Sharanya | `team/SHARANYA.md` | `models/`, `tuning/`, `evaluation/`, `results/` |
 | Shriya | `team/SHRIYA.md` | `api/`, `ui/`, `visualisations/`, `deployment/` |
+| Abdullah | `team/ABDULLAH.md` | `eda/`, `qa/`, `report/` |
 
 The hackathon PDFs are the source of truth. If this file disagrees with them, follow the PDFs and post the mismatch in your update file.
+
+## Evaluation rubric
+
+Total 25 marks, 5 for each:
+
+| Component | Main owner |
+|---|---|
+| Data preprocessing and feature extraction | Shriram and Abdullah |
+| Model selection and training | Sharanya |
+| Hyperparameter tuning | Sharanya |
+| ML Ops | Shriya |
+| Demo and deliverables | Shriya and Abdullah |
+
+Evaluators are told to check the API laptop logs (mandatory, because a working UI alone is not enough) and to verify that predictions come from the team's trained model and pipeline, not hardcoded outputs. The team must be able to explain preprocessing, feature engineering, model selection and HMM integration, answer technical questions, and reproduce the demo without manually changing outputs.
 
 ## How the Claudes communicate
 
@@ -18,7 +33,7 @@ The Claudes cannot message each other. This repo is the mailbox.
 
 **At the start of every session, and before starting a new task:**
 1. Run `git pull --rebase`.
-2. Read all three files in `team/updates/`, newest entries at the bottom.
+2. Read every file in `team/updates/`, newest entries at the bottom.
 3. Tell your user about anything addressed to them, any blocker, and any contract change.
 
 **After finishing a task, changing a contract, or getting blocked:**
