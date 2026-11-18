@@ -1,14 +1,18 @@
-"""Tune decoder settings and compare classifier-only with classifier plus HMM.
+"""Tune the decoder with Bayesian optimisation, then compare it with classifier-only.
 
 Expected input: <scores>/<tuning set>/<trip>.parquet and
 <scores>/student_test/<trip>.parquet, with obs_idx, arc_id, f_along_arc, p_match.
+
+The emission weight stays at 1 because scaling it only rescales the transition
+settings, so searching it would add no new behaviour. Student-test trips are not
+used in the search.
 """
 import argparse
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict, replace
-from itertools import product
 from pathlib import Path
 
+import optuna
 import pandas as pd
 
 from data_processing.loader import load_trip
@@ -18,11 +22,15 @@ from hmm.route_metrics import score_trip
 from hmm.viterbi import DecoderConfig, classifier_only, decode, save_config
 
 OUTPUTS = Path(__file__).parent / "outputs"
-GRID = {
-    "emission_weight": (0.5, 1.0, 2.0),
-    "transition_scale_m": (5.0, 10.0, 20.0, 40.0),
-    "unreachable_penalty": (10.0, 25.0, 50.0),
-}
+SEED = 42
+
+
+def suggest_settings(trial):
+    return {
+        "transition_scale_m": trial.suggest_float("transition_scale_m", 1.0, 40.0, log=True),
+        "unreachable_penalty": trial.suggest_float("unreachable_penalty", 5.0, 150.0, log=True),
+        "backward_tolerance_m": trial.suggest_float("backward_tolerance_m", 0.0, 40.0),
+    }
 
 
 def trip_folder(trip_id, partition):
@@ -61,28 +69,28 @@ def main():
     parser.add_argument("--scores", default=None, help="folder of scored candidates")
     parser.add_argument("--tuning-set", default="tuning")
     parser.add_argument("--source", default="temporary baseline scores")
+    parser.add_argument("--trials", type=int, default=30)
     parser.add_argument("--workers", type=int, default=8)
     args = parser.parse_args()
     scores = Path(args.scores) if args.scores else work_root() / "baseline_scores"
     OUTPUTS.mkdir(exist_ok=True)
 
-    search = []
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
-        for values in product(*GRID.values()):
-            settings = dict(zip(GRID, values))
-            config = replace(DecoderConfig(), **settings)
-            table = _evaluate(pool, scores / args.tuning_set, "train", config)
-            row = _summary(table).loc["hmm"].to_dict()
-            search.append({**settings, **row})
-            print(settings, {k: round(v, 4) for k, v in row.items()}, flush=True)
-        search = pd.DataFrame(search).sort_values(
-            ["top1_accuracy", "reachable_continuity"], ascending=False
-        )
-        search.to_csv(OUTPUTS / "decoder_search.csv", index=False, float_format="%.5f")
-        best = search.iloc[0]
-        config = replace(DecoderConfig(), **{name: float(best[name]) for name in GRID})
-        save_config(config, args.source)
+        def objective(trial):
+            config = replace(DecoderConfig(), **suggest_settings(trial))
+            summary = _summary(_evaluate(pool, scores / args.tuning_set, "train", config)).loc["hmm"]
+            for name, value in summary.items():
+                trial.set_user_attr(name, float(value))
+            return float(summary["top1_accuracy"])
 
+        optuna.logging.set_verbosity(optuna.logging.WARNING)
+        study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=SEED))
+        study.optimize(objective, n_trials=args.trials)
+        trials = study.trials_dataframe(attrs=("number", "value", "duration", "params", "user_attrs"))
+        trials.to_csv(OUTPUTS / "decoder_search.csv", index=False, float_format="%.5f")
+
+        config = replace(DecoderConfig(), **study.best_params)
+        save_config(config, args.source)
         tuning = _evaluate(pool, scores / args.tuning_set, "train", config, True)
         test = _evaluate(pool, scores / "student_test", "student_test", config, True)
 
