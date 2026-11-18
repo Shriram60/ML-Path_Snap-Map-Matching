@@ -1,0 +1,30 @@
+feature,importance,group,group_importance
+f_anchor_match,0.68025,neighbouring points,0.82531
+f_anchor_support,0.13730,neighbouring points,0.82531
+f_dist_to_arc_end_m,0.03848,position on arc,0.04999
+f_dist_gap_to_best_m,0.02525,distance,0.04173
+f_heading_cos_carried,0.02433,heading,0.05432
+f_heading_cos_next,0.02155,heading,0.05432
+f_dist_ratio_to_best,0.00977,distance,0.04173
+f_connected_next,0.00828,road connectivity,0.01654
+f_heading_cos,0.00638,heading,0.05432
+f_connected_prev,0.00513,road connectivity,0.01654
+f_arc_length_log,0.00480,position on arc,0.04999
+f_context_dist_mean_m,0.00477,neighbouring points,0.82531
+f_straightness,0.00444,movement,0.01063
+f_signed_offset_m,0.00378,position on arc,0.04999
+f_dist_m,0.00341,distance,0.04173
+f_dist_rank,0.00330,distance,0.04173
+f_context_dist_max_m,0.00299,neighbouring points,0.82531
+f_along_arc,0.00294,position on arc,0.04999
+f_net_speed_mps,0.00264,movement,0.01063
+f_heading_rank,0.00200,heading,0.05432
+f_step_prev_m,0.00164,movement,0.01063
+f_speed_mps,0.00156,movement,0.01063
+f_n_candidates,0.00148,candidate count,0.00148
+f_to_out_degree,0.00142,road connectivity,0.01654
+f_has_reverse,0.00093,road connectivity,0.01654
+f_from_out_degree,0.00079,road connectivity,0.01654
+f_dt_prev_log,0.00021,movement,0.01063
+f_dt_next_log,0.00015,movement,0.01063
+f_heading_known,0.00005,heading,0.05432

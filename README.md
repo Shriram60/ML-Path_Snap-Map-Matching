@@ -87,6 +87,7 @@ python -m features.candidate_tuning
 python -m features.build_dataset
 python -m models.train_compare
 python -m tuning.bayes_opt --model random_forest --timeout 900 --search-frac 0.05
+python -m features.feature_importance
 python -m hmm.final_scores
 python -m hmm.evaluate --scores "%PATHSNAP_WORK%\final_scores" --source "final tuned random forest"
 ```
@@ -97,6 +98,7 @@ python -m hmm.evaluate --scores "%PATHSNAP_WORK%\final_scores" --source "final t
 | Dataset build | Candidate and reference tables in `PATHSNAP_WORK`, summaries in `features/outputs/` |
 | Model comparison | `results/model_comparison.csv`, `results/per_model/`, `results/plots/` |
 | Bayesian tuning | `results/tuning/`, `models/artifacts/` |
+| Feature importance | `features/outputs/feature_importance.csv` |
 | HMM tuning and comparison | `hmm/hmm_config.json`, `hmm/outputs/` |
 
 All hyperparameter tuning uses Bayesian optimisation with Optuna. Evaluator trips are not used for training, feature work, model choice or tuning.
