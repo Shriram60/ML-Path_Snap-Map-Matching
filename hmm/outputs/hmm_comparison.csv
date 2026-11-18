@@ -1,0 +1,5 @@
+score_source,dataset,method,top1_accuracy,route_continuity,reachable_continuity,route_f1
+temporary baseline scores,tuning,classifier_only,0.93395,0.94300,0.98401,0.94572
+temporary baseline scores,tuning,hmm,0.96432,0.97276,0.99992,0.98197
+temporary baseline scores,student_test,classifier_only,0.89648,0.95158,0.98469,0.95259
+temporary baseline scores,student_test,hmm,0.92726,0.98080,0.99984,0.98475

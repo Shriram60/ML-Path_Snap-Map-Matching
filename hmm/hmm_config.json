@@ -1,0 +1,13 @@
+{
+  "source": "temporary baseline scores",
+  "parameters": {
+    "emission_weight": 0.5,
+    "transition_scale_m": 10.0,
+    "unreachable_penalty": 25.0,
+    "search_radius_m": 300.0,
+    "route_slack_factor": 2.0,
+    "break_distance_m": 1500.0,
+    "backward_tolerance_m": 15.0,
+    "min_probability": 1e-06
+  }
+}
