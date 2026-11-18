@@ -1,0 +1,12 @@
+# Laptop 1 (API + model). Install from the repo root:
+#   pip install -r deployment/requirements-api.txt
+fastapi>=0.110
+uvicorn>=0.29
+numpy>=1.26
+pandas>=2.1
+scipy>=1.11
+folium>=0.16
+# The saved model must be loaded with the same scikit-learn version it was
+# trained with. Sharanya: pin the exact versions from your training run here.
+scikit-learn
+joblib
